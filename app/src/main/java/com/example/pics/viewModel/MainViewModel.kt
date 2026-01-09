@@ -1,16 +1,18 @@
-package com.example.pics
+package com.example.pics.viewmodel
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class MainViewModel: ViewModel(){
+class MainViewModel : ViewModel() {
+
     private val _bitmaps = MutableStateFlow<List<Bitmap>>(emptyList())
     val bitmaps = _bitmaps.asStateFlow()
 
     fun onTakePhoto(bitmap: Bitmap) {
-        _bitmaps.value += bitmap
+        _bitmaps.value = _bitmaps.value + bitmap
     }
 
+    // TODO: Persist images using Room or File storage
 }

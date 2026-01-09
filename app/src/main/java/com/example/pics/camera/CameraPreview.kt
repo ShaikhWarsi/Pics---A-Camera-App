@@ -1,4 +1,4 @@
-package com.example.pics
+package com.example.pics.camera
 
 import androidx.camera.core.Preview
 import androidx.camera.view.LifecycleCameraController
@@ -24,5 +24,3 @@ fun CameraPreview(
         modifier = modifier
     )
 }
-
-//This is all you need to for camera display in compose

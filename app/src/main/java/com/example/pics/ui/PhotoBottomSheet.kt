@@ -1,4 +1,4 @@
-package com.example.pics
+package com.example.pics.ui
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
@@ -18,38 +18,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 
-//To display photo
 @Composable
-fun PhotoBottomSheetContent(
-    bitmaps: List<Bitmap>,
-    modifier: Modifier = Modifier
-){
+fun PhotoBottomSheet(bitmaps: List<Bitmap>) {
     if (bitmaps.isEmpty()) {
-        Box(
-            modifier = modifier
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ){
-            Text("Take some photos first B!itch")
+        Box(Modifier.padding(16.dp), contentAlignment = Alignment.Center) {
+            Text("No photos yet. Capture some!")
         }
-    } else{
+    } else {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalItemSpacing = 16.dp,
             contentPadding = PaddingValues(16.dp),
-            modifier = modifier
+            verticalItemSpacing = 12.dp,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(bitmaps){ bitmap ->
+            items(bitmaps) {
                 Image(
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = it.asImageBitmap(),
                     contentDescription = null,
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp)
-                    )
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp))
                 )
-
             }
         }
     }
-}
 
+    // TODO (GOOD FIRST ISSUE):
+    // Add click-to-preview full screen image
+}
