@@ -175,4 +175,4 @@ Feel free to open an issue or ask in the discussions section. We're happy to hel
 
 ---
 
-**Happy contributing 💙 Let's build something awesome together!**
+**Happy contributing 💙 Let's build something awesome together!*
