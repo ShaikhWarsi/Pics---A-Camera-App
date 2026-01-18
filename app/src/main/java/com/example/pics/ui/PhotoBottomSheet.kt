@@ -25,6 +25,7 @@ import java.io.File
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Dialog
@@ -76,13 +77,30 @@ fun PhotoBottomSheet(
     }
 
     if (bitmaps.isEmpty() && videos.isEmpty()) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(32.dp),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("No photos or videos yet. Capture some!")
+            Icon(
+                imageVector = Icons.Default.Image,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = Color.LightGray
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "No photos or videos yet",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "Capture some memories to see them here!",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
         }
     } else {
         LazyVerticalStaggeredGrid(
