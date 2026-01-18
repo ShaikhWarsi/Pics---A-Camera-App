@@ -1,116 +1,149 @@
-# 📸 CameraX & Video/Photo Capture Guide
+# 📸 Pics – A Modern, Beginner-Friendly Camera App
 
-Welcome to the **Pics** app! This guide explains how we use Google's **CameraX** library to build a modern, lifecycle-aware camera experience with Jetpack Compose.
+**Pics** is a clean, educational Android camera application designed to showcase modern Android development practices. Built with **Kotlin**, **Jetpack Compose**, and **CameraX**, it serves as a practical guide for developers to understand camera integration, lifecycle management, and reactive UI patterns.
 
----
-
-## 1. 🌟 CameraX Overview
-
-### What is CameraX?
-CameraX is an Android Jetpack library designed to make camera development easier. It handles the complex "behind-the-scenes" work of camera management so you can focus on building your app's unique features.
-
-### Core Components
-CameraX is built on three main pillars:
-1.  **Preview**: Shows the live camera feed on the screen.
-2.  **ImageCapture**: Takes high-quality photos.
-3.  **VideoCapture**: Records videos with audio.
-
-### ⚖️ CameraX vs. Traditional Camera API
-| Feature | Traditional (Camera2) | Modern (CameraX) |
-| :--- | :--- | :--- |
-| **Complexity** | High (Manages sessions, surfaces, threads) | Low (Use-case based) |
-| **Lifecycle** | Manual management (Easy to leak memory) | **Lifecycle-aware** (Automatic) |
-| **Consistency** | Varies by device manufacturer | Consistent across 98% of Android devices |
-| **Boilerplate** | Hundreds of lines | Minimal code |
-
-### 🏗️ Architecture Flow
-Imagine the camera as a **Projector**:
-- **The Lens**: Your physical camera hardware.
-- **The Projector (CameraX)**: Manages the light and focus.
-- **The Screens (UseCases)**:
-    - **Preview Screen**: Where you see the live view.
-    - **Photo Screen**: Where the final image is captured.
-    - **Video Screen**: Where the recording is saved.
+The goal of this project is to help **beginners understand how a camera works in Android**, how CameraX integrates with Compose, and how to contribute to a real open‑source project in a friendly environment.
 
 ---
 
-## 2. 🎬 Video & Photo Capture Flow
+## ✨ Features
 
-### Step-by-Step Breakdown
-1.  **Initialize**: We create a `LifecycleCameraController`. Think of this as the "Remote Control" for the camera.
-2.  **Bind**: We link the controller to the app's lifecycle (so the camera turns off when you minimize the app).
-3.  **Configure**: We tell the controller which "Screens" (UseCases) we want: `IMAGE_CAPTURE` and `VIDEO_CAPTURE`.
-4.  **Display**: We use `PreviewView` inside a `CameraPreview` composable to show the lens's view to the user.
-
-### 🔄 Lifecycle Awareness
-CameraX is "Lifecycle-Aware." This means:
-- When the user switches apps, CameraX **automatically pauses** the camera.
-- When the user returns, CameraX **automatically resumes** the camera.
-- No more manual `onPause()` or `onResume()` boilerplate!
-
-### 🛠️ Error Handling
-We handle common scenarios in [CameraActions.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/camera/CameraActions.kt):
-- **Storage Full**: Alerts the user if there's no space.
-- **Permission Denied**: Checks for Camera/Mic permissions before starting.
-- **Encoding Failures**: Provides specific feedback if a recording fails.
+- 📹 **Video Recording**: High-quality video capture with real-time **Pause/Resume** functionality.
+- 📸 **Photo Capture**: Instant photo taking with high-resolution output.
+- 🔄 **Camera Switching**: Seamlessly toggle between front and back cameras.
+- 🖼️ **In-App Gallery**: Quick preview of captured photos and videos via a sleek Bottom Sheet.
+- 🎨 **Material 3 UI**: Modern, responsive design built entirely with Jetpack Compose.
+- 🛡️ **Smart Permissions**: Robust handling of Camera and Microphone permissions.
+- 🧩 **Lifecycle Aware**: Automatically manages camera resources to prevent battery drain and crashes.
 
 ---
 
-## 3. 📂 Project Structure
+## 🛠️ Tech Stack & Architecture
 
-The app's logic is organized into clean, focused packages:
+This app is built using the latest Android technologies to ensure performance, readability, and maintainability.
 
-| Package | Purpose | Role |
-| :--- | :--- | :--- |
-| `camera` | CameraX Logic | Contains [CameraPreview.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/camera/CameraPreview.kt) (UI component) and [CameraActions.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/camera/CameraActions.kt) (Logic). |
-| `ui` | User Interface | [CameraScreen.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/ui/CameraScreen.kt) defines the layout, buttons, and indicators. |
-| `viewmodel` | State Management | [MainViewModel.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/viewmodel/MainViewModel.kt) holds the list of captured photos and recording status. |
-| `utils` | Helpers | [PermissionUtils.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/utils/PermissionUtils.kt) handles Android permission requests. |
+### **Technologies**
+- **Language**: [Kotlin](https://kotlinlang.org/) (100%) - Leveraging modern features like Coroutines and Flow.
+- **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose) - Declarative UI for a responsive and modern experience.
+- **Camera Engine**: [CameraX](https://developer.android.com/training/camerax) - Google's modern camera library for consistent behavior across devices.
+- **Architecture**: **MVVM (Model-View-ViewModel)** - Ensures clean separation of concerns.
+- **State Management**: [Kotlin StateFlow](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-state-flow/) - Reactive state updates for the UI.
+- **Dependency Management**: [Gradle Version Catalog](https://docs.gradle.org/current/userguide/platforms.html) - Centralized and type-safe dependency management.
+- **Design System**: [Material 3](https://m3.material.io/) - The latest iteration of Material Design.
 
 ---
 
-## 4. 📝 Key Implementation Details
+## 🏗️ How It Works: A Technical Deep Dive
 
-### Taking a Photo
-```kotlin
-// Inside CameraActions.kt
-fun takePhoto(context: Context, controller: LifecycleCameraController, onPhotoTaken: (Bitmap) -> Unit) {
-    controller.takePicture(
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageCapturedCallback() {
-            override fun onCaptureSuccess(image: ImageProxy) {
-                onPhotoTaken(image.toBitmap()) // 🖼️ Send photo to ViewModel
-                image.close() // 🧹 Clean up memory
-            }
-        }
-    )
-}
+### **1. The Camera Controller**
+The heart of the app is the `LifecycleCameraController`. Unlike the older Camera2 API, this controller is **Lifecycle-Aware**.
+- It is initialized in [MainActivity.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/MainActivity.kt).
+- It automatically handles camera startup and shutdown when the app moves between foreground and background.
+
+### **2. CameraX Use Cases**
+CameraX works by binding "Use Cases" to the camera lifecycle:
+- **Preview**: Managed by `PreviewView` in [CameraPreview.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/camera/CameraPreview.kt). It provides a smooth live feed.
+- **ImageCapture**: Configured to take high-quality stills. Logic resides in `CameraActions.takePhoto()`.
+- **VideoCapture**: Uses the modern `Recorder` and `Recording` API for efficient video streaming.
+
+### **3. Reactive Data Flow**
+
+```text
+[ User Interaction ] -> [ CameraActions ] -> [ CameraX Hardware ]
+                                                     |
+                                                     v
+[ UI Recomposition ] <- [ MainViewModel ] <- [ Success Callback ]
 ```
 
-### Recording Video
-```kotlin
-// Inside CameraActions.kt
-recording = controller.startRecording(
-    FileOutputOptions.Builder(outputFile).build(),
-    AudioConfig.create(false), // 🔇 Audio disabled for emulator stability
-    ContextCompat.getMainExecutor(context)
-) { event ->
-    if (event is VideoRecordEvent.Finalize) {
-        // 🏁 Handle the finished recording
-    }
-}
+- **Photo Flow**: User taps shutter -> [CameraActions.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/camera/CameraActions.kt) triggers `takePicture` -> `ImageProxy` received -> Converted to `Bitmap` -> Added to `StateFlow` in [MainViewModel.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/viewmodel/MainViewModel.kt).
+- **Video Flow**: User taps record -> `controller.startRecording()` creates a `Recording` object -> [MainViewModel.kt](file:///d:/contri/Pics---A-Camera-App-main/app/src/main/java/com/example/pics/viewmodel/MainViewModel.kt) tracks `isRecording` state -> File saved to `context.filesDir` upon finalization.
+
+---
+
+## 📂 Project Structure
+
+```text
+com.example.pics
+│
+├── 📷 camera/
+│   ├── CameraActions.kt   # Core logic for capture and recording
+│   └── CameraPreview.kt   # Bridge between CameraX and Jetpack Compose
+│
+├── 🎨 ui/
+│   ├── theme/             # M3 Color schemes, Typography, and Shapes
+│   ├── CameraScreen.kt    # The main UI layout and interaction logic
+│   └── PhotoBottomSheet.kt # Interactive gallery preview component
+│
+├── 🧠 viewmodel/
+│   └── MainViewModel.kt   # App state management and business logic
+│
+├── 🛠️ utils/
+│   └── PermissionUtils.kt # Clean, modular permission handling
+│
+└── 🚀 MainActivity.kt     # App entry point and CameraX initialization
 ```
 
 ---
 
-## 5. 🆘 Troubleshooting & Common Issues
+## 🛠️ Current Limitations & Roadmap
 
-- **Black Preview**: Ensure you have granted Camera permissions. Check if another app is using the camera.
-- **Recording Fails (Emulator)**: Recording with audio often fails on Android Emulators. We disable audio by default in `AudioConfig.create(false)` for better stability during development.
-- **Memory Issues**: Always ensure `image.close()` is called in the photo capture callback.
+We are constantly improving! Here is what we are working on:
+
+1.  **💾 Persistent Storage**: Currently, photos are kept in memory (lost on app close).
+    - *Goal*: Save to MediaStore or internal storage.
+2.  **📺 Full Media Viewer**: Tapping a photo currently only shows it in the bottom sheet.
+    - *Goal*: Add a full-screen viewer with zoom and share options.
+3.  **⚡ Flash & Zoom**: Basic controls are implemented, but UI toggles are coming soon.
+4.  **🎭 Image Filters**: Integration with CameraX Extensions for real-time effects.
 
 ---
 
-## 📚 References
-- [Official CameraX Documentation](https://developer.android.com/training/camerax)
-- [Jetpack Compose & CameraX Guide](https://developer.android.com/codelabs/camerax-getting-started)
+## 🚀 Getting Started
+
+### **Prerequisites**
+- **Android Studio**: Ladybug or newer.
+- **JDK**: Java 17 (recommended).
+- **Device**: A physical Android device with a camera (API 24+).
+
+### **Setup Steps**
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/Vaibhav-P1/Pics---A-Camera-App.git
+    ```
+2.  **Open & Sync**: Open the project in Android Studio and wait for Gradle to sync.
+3.  **Run**: Click the **Run** button to install the app on your connected device.
+
+---
+
+## 🤝 Contributing & Learning
+
+This project is **beginner-friendly** by design! We encourage you to:
+- **Improve the UI**: Refine the Material 3 implementation.
+- **Add Features**: Check our roadmap for "Good First Issues".
+- **Refactor**: Suggest cleaner ways to handle state or logic.
+
+Please read our [CONTRIBUTING.md](file:///d:/contri/Pics---A-Camera-App-main/CONTRIBUTING.md) for detailed guidelines.
+
+### **Learning Goals for Newcomers**
+- Master **CameraX** Use Cases and Lifecycle.
+- Understand **Jetpack Compose** state and recomposition.
+- Learn modern **MVVM** architecture with StateFlow.
+- Practice the **Git/GitHub** open-source workflow.
+
+---
+
+## 🆘 Troubleshooting
+
+- **Black Screen**: Ensure Camera permissions are granted. Check if another app is using the camera.
+- **Recording Fails**: On emulators, video recording can be unstable. We recommend testing on a physical device.
+- **Build Errors**: Ensure you are using **JDK 17** and the latest Android Studio.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the **MIT License**.
+
+---
+
+Happy coding! 🚀
