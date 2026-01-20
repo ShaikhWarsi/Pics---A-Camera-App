@@ -172,11 +172,12 @@ fun CameraScreen(
                     }
                 ) {
                     Icon(
+                        // 🔄 Dynamic Icon: Stop (Square) when recording, Camera (Video) when stopped
                         imageVector = if (isRecording) Icons.Default.Stop else Icons.Default.Videocam,
                         contentDescription = if (isRecording) "Stop Recording" else "Record Video",
+                        // 🎨 Dynamic Color: Red when recording, White when stopped
                         tint = if (isRecording) Color.Red else Color.White
                     )
-                }
 
                 // ⏸️ Pause / Resume Video (Only visible when recording)
                 if (isRecording) {
